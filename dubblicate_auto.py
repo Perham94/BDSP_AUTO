@@ -1,112 +1,97 @@
-webpage="Google Chrome" #Name of the web browswer you are using.
-
-waittime=18.4
-
-from pynput.keyboard import Key, Controller
 import time
-import win32com.client as comclt
+from random import randint
 
-#Define function to press a key twice. This is the primarily used function to avoid missing a button press
-def Key_Press_Twice(key):
-    keyboard.press(key)
+import nxbt
+from nxbt import Buttons
+from nxbt import Sticks
 
-    time.sleep(.1)
-    keyboard.release(key)
-
-    time.sleep(.1)
-
-    keyboard.press(key)
-
-    time.sleep(.1)
-    keyboard.release(key)
-
-#Define function to press a key once.
-def Key_Press_Once(key):
-    print(key)
-    keyboard.press(key)
-    time.sleep(.1)
-    keyboard.release(key)
+nx = nxbt.Nxbt()
+controller_idx = nx.create_controller(
+    nxbt.PRO_CONTROLLER,
+    reconnect_address=nx.get_switch_addresses())
 
 
+def init():
 
-
-
-wsh= comclt.Dispatch("WScript.Shell") # Allow the script to automatically change to the correct tab
-
-
-
-keyboard = Controller() # Initialize the keyboard to use as a Controller
-
-print("Starting in 3")
-time.sleep(1)
-print("2")
-time.sleep(1)
-print("1")
-time.sleep(1)
-print("live")
-
-
-wsh.AppActivate(webpage)#Switch to the correct tab
-
-
-def index_in_list():
-    v = 0;
-    for v in range(0, 6):
-
-        Key_Press_Once('l')
-        time.sleep(0.6)
-        Key_Press_Once('s')
-        time.sleep(0.2)
-        Key_Press_Once('l')
-        time.sleep(0.6)
-        Key_Press_Once('l')
-        time.sleep(0.8)
-        Key_Press_Once('l')
-        time.sleep(0.5)
-        Key_Press_Once('d')
-        time.sleep(0.3)
-
-
-
-def rows():
-    l = 0;
-    for l in range(0, 5):
-        index_in_list()
-        if l != 5:
-            Key_Press_Once('d')
-            time.sleep(0.2)
-            Key_Press_Once('s')
-
-
-
-
-
-for i in range(0, 10):
-    print(i)
-
-    time.sleep(1.5)
-    Key_Press_Once('l')
+    nx.wait_for_connection(controller_idx)
+    nx.press_buttons(controller_idx,[Buttons.A],)
     time.sleep(2)
-    Key_Press_Once('s')
+    nx.press_buttons(controller_idx,[Buttons.A])
     time.sleep(2)
-    Key_Press_Once('i')
-    time.sleep(2.5)
-    Key_Press_Once('l')
-    time.sleep(2)
-    Key_Press_Twice('9')
-    time.sleep(2.5)
-    Key_Press_Once('i')
+
+
+
+def open_secound_menu():
+    nx.press_buttons(controller_idx, [Buttons.A])
     time.sleep(1)
+    nx.press_buttons(controller_idx,[Buttons.DPAD_DOWN])
+    time.sleep(1)
+    nx.press_buttons(controller_idx,[Buttons.X])
+    time.sleep(1)
+    nx.press_buttons(controller_idx, [Buttons.A])
+    time.sleep(2)
+    nx.press_buttons(controller_idx, [Buttons.R])
+    time.sleep(2.5)
+    nx.press_buttons(controller_idx, [Buttons.X])
 
-    rows()
-    time.sleep(2)
-    Key_Press_Once('k')
-    time.sleep(2)
-    Key_Press_Once('k')
-    time.sleep(2)
-    Key_Press_Once('k')
-    time.sleep(2)
-    Key_Press_Once('l')
-    time.sleep(2)
-    Key_Press_Once('k')
-    time.sleep(2.3)
+def getItem(Button_Direction):
+    for index in range(0,6):
+        nx.press_buttons(controller_idx, [Buttons.A])
+        time.sleep(0.6)
+        nx.press_buttons(controller_idx,[Buttons.DPAD_DOWN])
+        time.sleep(0.6)
+        nx.press_buttons(controller_idx, [Buttons.A])
+        time.sleep(0.6)
+        nx.press_buttons(controller_idx, [Buttons.A])
+        time.sleep(0.6)
+        nx.press_buttons(controller_idx, [Buttons.A])
+        time.sleep(0.6)
+        nx.press_buttons(controller_idx,[Button_Direction])
+
+def getSloth():
+    for slot in range(0, 5):
+        if (slot % 2) == 0:
+            getItem(nxbt.Buttons.DPAD_RIGHT)
+            nx.press_buttons(controller_idx, [Buttons.DPAD_LEFT])
+            time.sleep(0.6)
+        if (slot % 2) != 0:
+            getItem(nxbt.Buttons.DPAD_LEFT)
+            nx.press_buttons(controller_idx, [Buttons.DPAD_RIGHT])
+            time.sleep(0.6)
+
+        nx.press_buttons(controller_idx,[Buttons.DPAD_DOWN])
+        time.sleep(0.8)
+
+def back_To_First_Menu():
+    nx.press_buttons(controller_idx,[Buttons.B])
+    time.sleep(1.0)
+    nx.press_buttons(controller_idx, [Buttons.B])
+    time.sleep(1.0)
+    nx.press_buttons(controller_idx, [Buttons.B])
+    time.sleep(1.0)
+    nx.press_buttons(controller_idx, [Buttons.A])
+    time.sleep(1.0)
+    nx.press_buttons(controller_idx, [Buttons.B])
+    time.sleep(1.0)
+
+
+
+def start_Macro():
+   for i in range(0, 10):
+        open_secound_menu()
+        getSloth()
+        back_To_First_Menu()
+        time.sleep(1.0)
+
+
+
+
+
+
+# Start the NXBT service
+
+
+init()
+start_Macro()
+
+
